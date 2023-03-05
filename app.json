@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "SpedyDelivery",
+    "slug": "spedyDelivery",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon2.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#f5220f",
+      "resizeMode": "cover"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.spedydelivery.store",
+      "supportsTablet": true
+    },
+    "android": {
+      "backgroundColor": "#fff",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon2.png",
+        "backgroundColor": "#f5220f"
+      },
+      "package": "com.spedydelivery.store"
+    },
+    "web": {
+      "favicon": "./assets/images/Logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "424b2838-92d5-4da4-80d8-0715e9650a81"
+      }
+    },
+    "owner": "prashant830"
+  }
+}

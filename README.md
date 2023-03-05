@@ -1,2 +1,2 @@
-# SpedyDelivery
- SpedyDelivery for Spedy App
+# Spedy
+online delivery app
