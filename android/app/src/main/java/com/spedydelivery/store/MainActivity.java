@@ -1,4 +1,4 @@
-package com.spedy.store;
+package com.spedydelivery.store;
 
 import android.os.Build;
 import android.os.Bundle;

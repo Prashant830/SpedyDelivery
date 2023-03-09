@@ -1,4 +1,4 @@
-package com.spedy.store.newarchitecture.components;
+package com.spedydelivery.store.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

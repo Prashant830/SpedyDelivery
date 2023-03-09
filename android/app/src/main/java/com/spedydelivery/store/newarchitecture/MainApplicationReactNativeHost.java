@@ -1,4 +1,4 @@
-package com.spedy.store.newarchitecture;
+package com.spedydelivery.store.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.spedy.store.BuildConfig;
-import com.spedy.store.newarchitecture.components.MainComponentsRegistry;
-import com.spedy.store.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.spedydelivery.store.BuildConfig;
+import com.spedydelivery.store.newarchitecture.components.MainComponentsRegistry;
+import com.spedydelivery.store.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
