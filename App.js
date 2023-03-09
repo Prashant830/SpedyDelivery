@@ -7,7 +7,11 @@ import { Provider as ReduxProvider } from 'react-redux';
 import HomePage from './components/HomePage';
 import SplashScreen from './components/SplashScreen';
 import OrderSelected from './components/OrderSelected';
+import LoginPage from './components/LoginPage';
 import configurestore from "./redux/store";
+import { getAuth } from 'firebase/auth';
+import firebaseApp from './config';
+
 
 
 
@@ -26,6 +30,7 @@ const App = () => {
   const [userLocation, setUserLocation] = useState()
   const [userAdd, setUserAdd] = useState({})
   const [showSplashScreen, setShowSplashScreen] = useState(true)
+  var auth = getAuth(firebaseApp).currentUser
 
   LogBox.ignoreAllLogs();
   // console.log(auth)
@@ -136,12 +141,19 @@ const App = () => {
             backgroundColor: "#fff",
           }
         }}>
-          {showSplashScreen ?
+        {showSplashScreen ?
             <Stack.Screen name='Splash' options={{ headerShown: false, }}  >
               {() => (<SplashScreen getPermission={getPermission === undefined ? fasle : getPermission} />
 
               )}
             </Stack.Screen>
+            :
+            (auth === null) ?
+              <Stack.Screen name='LoginPage' options={{ headerShown: false, animation: "fade" }}>
+                {() => (<LoginPage getPermission={getPermission === undefined ? fasle : getPermission} userLocation={userLocation === undefined ? {} : userLocation} userAdd={userAdd[0] === undefined ? {} : userAdd[0]} />
+
+                )}
+              </Stack.Screen>
               :
               <Stack.Screen name='HomePage' options={{ headerShown: false, animation: 'fade', animationDuration: 500 }}  >
                 {() => (<HomePage getPermission={getPermission === undefined ? fasle : getPermission} userLocation={userLocation === undefined ? {} : userLocation} userAdd={userAdd[0] === undefined ? {} : userAdd[0]} />

@@ -10,7 +10,6 @@ import style from './CSS';
 
 const OrderCart = ({ order }) => {
     const [fullOrder, setFullOrder] = useState(false)
-    const [number, setNumber] = useState("")
     const [isSubmit, setIsSubmit] = useState(true)
     const [fullOrderStatus, setFullOrderStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
@@ -160,10 +159,43 @@ const OrderCart = ({ order }) => {
             }
             <TouchableOpacity
                 activeOpacity={0.8}
+
                 onPress={() => {
 
-                    setFullOrderStatus(true)
-                    //navigation.navigate('OrderSelected')
+                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                        OrderAddToDeliveryList: true
+                    })
+
+
+                        
+                        firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).set({
+           orderid: order?.orderid,
+           cart: order?.cart,
+           name: order?.name,
+           address: order?.address,
+           number: order?.number,
+           paymentOption: order?.paymentOption,
+           orderAmount: order?.orderAmount,
+           activeOrderDetail: "Processing",
+           currentUserNumber: order?.number,
+           deliveryBoyName: null,
+           deliveryBoyNumber: null,
+           deliveryBoyLat: null,
+           deliveryBoyLong: null,
+           orderProcessing: false,
+           orderPreparing: false,
+           orderPickup: false,
+           orderDelivered: false,
+           orderDate: order?.orderDate,
+           OrderAddToDeliveryList: true,
+           lat : order?.lat,
+           long : order?.long
+
+           
+                   })
+
+                   navigation.navigate('OrderSelected')
+                 
                 }} style={{ display: 'flex', flexDirection: "row", alignItems: 'center', paddingHorizontal: 5, marginTop: 5, width: "100%" }}>
                 <Text style={{ fontSize: 12, fontWeight: '300', flex: 1 }}>Order Status: {order?.activeOrderDetail} </Text>
                 {
@@ -171,66 +203,6 @@ const OrderCart = ({ order }) => {
                         <Text style = {{fontSize: 14, fontWeight: '300' , color: "#0000FF"}}> Accept order</Text>
                 }
             </TouchableOpacity>
-            {
-            fullOrderStatus &&
-            
-            <View style={{
-                display: "flex",
-                width: "100%",
-                 }}>
-
-            <TextInput
-              placeholder="Enter Your Phone Number"
-              placeholderTextColor="lightgray"
-              onChangeText={setNumber}
-              keyboardType="number-pad"
-              style={
-                style.textInputtwo
-              }
-
-              maxLength={10}
-
-            /> 
-
-            <View style={{
-                display: "flex",
-                 }}>
-                <TouchableOpacity style={style.sendCode}
-                    onPress={ () =>{
-                        
-                         firebaseApp.firestore().collection("Delivery").doc(number).collection("Orders").doc(order?.orderid).set({
-            orderid: order?.orderid,
-            cart: order?.cart,
-            name: order?.name,
-            address: order?.address,
-            number: order?.number,
-            paymentOption: order?.paymentOption,
-            orderAmount: order?.orderAmount,
-            activeOrderDetail: "Processing",
-            currentUserNumber: order?.number,
-            deliveryBoyName: null,
-            deliveryBoyNumber: null,
-            deliveryBoyLat: null,
-            deliveryBoyLong: null,
-            orderProcessing: false,
-            orderPreparing: false,
-            orderPickup: false,
-            orderDelivered: false,
-            orderDate: order?.orderDate
-                    })
-
-                    navigation.navigate('OrderSelected')
-                    }}
-                  >
-               <Text style={style.buttonText}> Add List</Text>
-                </TouchableOpacity>
-            </View>
-
-            </View>
-
-
-            }
-
         </View>
     )
 }

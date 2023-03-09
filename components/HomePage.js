@@ -63,8 +63,9 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
                 setFetchorders(
                     res.docs.map((restaurant) => {
 
-
+                          if(restaurant.data()?.OrderAddToDeliveryList == false){
                             return restaurant.data()
+                          }
 
                     }
 

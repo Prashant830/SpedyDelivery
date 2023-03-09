@@ -2,6 +2,8 @@ import { AntDesign, Entypo } from '@expo/vector-icons';
 
 import React, { useState } from 'react';
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
+import firebaseApp from '../config';
+
 
 const SelectedOrderCard = ({ order }) => {
     const [fullOrder, setFullOrder] = useState(false)
@@ -148,6 +150,88 @@ const SelectedOrderCard = ({ order }) => {
                     }
                 </View>
             }
+            <TouchableOpacity
+                activeOpacity={0.8}
+
+                onPress={() => {
+
+                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                        activeOrderDetail: "Preparing",
+                        orderProcessing: true,
+                        orderPreparing: true
+
+                    })
+
+
+                        
+                        firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
+                            activeOrderDetail: "Preparing",
+                            orderProcessing: true,
+                            orderPreparing: true
+
+           
+                   })
+
+                 
+                }} style={{ display: 'flex', flexDirection: "row", alignItems: 'center', paddingHorizontal: 5, marginTop: 5, width: "100%" }}>
+                <Text style = {{fontSize: 14 , color: "#0000FF"}}> Order Preparing</Text>    
+            
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                activeOpacity={0.8}
+
+                onPress={() => {
+
+                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                        activeOrderDetail: "Pickup",
+                        orderPickup: true,
+
+                    })
+
+
+                        
+                        firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
+                            activeOrderDetail: "Pickup",
+                            orderPickup: true,
+
+           
+                   })
+
+                 
+                }} style={{ display: 'flex', flexDirection: "row", alignItems: 'center', paddingHorizontal: 5, marginTop: 5, width: "100%" }}>
+            <Text style = {{fontSize: 14 , color: "#0000FF"}}> Order Pickup</Text>
+            
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                activeOpacity={0.8}
+
+                onPress={() => {
+
+                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                        activeOrderDetail: "Delivered",
+                        orderDelivered: true,
+                    })
+
+
+                        
+                        firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
+                    
+                    activeOrderDetail: "Delivered",
+                    orderDelivered: true,
+        
+
+           
+                   })
+
+                 
+                }} style={{ display: 'flex', flexDirection: "row", alignItems: 'center', paddingHorizontal: 5, marginTop: 5, width: "100%" }}>
+                <Text style = {{fontSize: 14 , color: "#0000FF"}}> Order Delivered</Text>    
+            
+            </TouchableOpacity>
+
+            
         </View>
     )
 }

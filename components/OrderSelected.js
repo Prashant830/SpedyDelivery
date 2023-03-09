@@ -26,24 +26,32 @@ import OrderCart from './OrderCart';
 
 
 
+
 const OrderSelected = () => {
 
     const [number, setNumber] = useState("")
     const [fetchorders, setFetchorders] = useState([])
     const orders = []
 
-    const fetchList = async () => {
+    useEffect(() => {
+        (async () => {
 
-        await firebaseApp.firestore().collection("Delivery").doc(number).collection("Orders").onSnapshot((res) => {
-            setFetchorders(
-                res.docs.map((restaurant) => {
-                        return restaurant.data()
+            firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").onSnapshot((res) => {
+                setFetchorders(
+                    res.docs.map((restaurant) => {
+                            return restaurant.data()
+    
+                    })
+    
+                    )
+               })
 
-                })
+        })
 
-                )
-           })
-}
+            ()
+
+    }, [])
+   
     
 if (fetchorders !== undefined) {
     fetchorders.forEach((res) => {
@@ -60,41 +68,7 @@ console.log(orders)
         <>
 <SafeAreaView >
 
-<ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-
-        <View style={{
-                display: "flex",
-                width: "100%",
-                alignItems: 'center',
-                justifyContent: 'center'
-                 }}>
-
-            <TextInput
-              placeholder="Enter Your Phone Number"
-              placeholderTextColor="lightgray"
-              onChangeText={setNumber}
-              keyboardType="number-pad"
-              style={
-                style.textInputtwo
-              }
-
-              maxLength={10}
-
-            /> 
-
-            <View style={{
-                display: "flex",
-                alignItems: 'center',
-                justifyContent: 'center'
-                 }}>
-                <TouchableOpacity style={style.sendCode}
-                    onPress={fetchList}
-                  >
-               <Text style={style.buttonText}> Check Your list</Text>
-                </TouchableOpacity>
-            </View>
-
-        </View>
+           <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
 
                           <Text style={{ fontSize: 22, fontWeight: '300', paddingHorizontal: 10, marginTop: 20, marginBottom: 10 }}>Select <Text style={{ fontWeight: "500", color: "#f5220f" }}>Orders</Text></Text>
 
