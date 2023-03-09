@@ -1,6 +1,6 @@
 
 
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import haversine from "haversine";
@@ -17,11 +17,11 @@ import {
     TextInput, TouchableOpacity, View
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import firebaseApp from "../config";
 import Header from "./Header";
 import IosStatusBar from "./IosStatusBar";
-import firebaseApp from "../config"
-import TabNavigation from "./TabNavigation";
 import OrderCart from './OrderCart';
+import TabNavigation from "./TabNavigation";
 
 
 const HomePage = ({ getPermission, userLocation, userAdd }) => {
@@ -30,7 +30,7 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
     const userCoordinates = useSelector((state) => state.userLocationReducer.location)
     const userAddress = useSelector((state) => state.userLocationReducer.address)
     const navigation = useNavigation()
-    
+
 
     useEffect(() => {
 
@@ -50,8 +50,8 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
         }
 
     }, [userAdd])
-    
-    
+
+
     const db = firebaseApp.firestore()
     const [fetchorders, setFetchorders] = useState([])
     const orders = []
@@ -63,9 +63,9 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
                 setFetchorders(
                     res.docs.map((restaurant) => {
 
-                          if(restaurant.data()?.OrderAddToDeliveryList == false){
+                        if (restaurant.data()?.OrderAddToDeliveryList == false) {
                             return restaurant.data()
-                          }
+                        }
 
                     }
 
@@ -81,37 +81,83 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
 
     if (fetchorders !== undefined) {
         fetchorders.forEach((res) => {
+
+            // console.log(userCoordinates?.latitude)
             if (res !== undefined) {
-                orders.push(res)
+                const startPoint = {
+                    latitude: userCoordinates?.latitude,
+                    longitude: userCoordinates?.longitude
+                }
+
+                const endPoint = {
+                    latitude: res?.lat,
+                    longitude: res?.long
+                }
+
+                const distance = haversine(startPoint, endPoint, { unit: "meter" })
+
+
+                if (((distance / 1000).toFixed(1)) < 7) {
+                    // console.log(distance)
+                    // console.log(((distance / 1000).toFixed(1)))
+                    orders.push(res)
+
+                }
+
             }
         })
     }
 
-     
 
-     console.log(orders)
 
+    // console.log(userCoordinates)
+    // console.log(firebaseApp.auth()?.currentUser?.phoneNumber)
     return (
-
+        fetchorders === undefined ?
             <>
                 <IosStatusBar />
-                <Header />
+                <View style={{ width: "100%", height: "80%", display: "flex", alignItems: 'center', justifyContent: "center" }}>
+                    <ActivityIndicator size={24} color="#f5220f" />
+                </View>
+            </>
+            :
+            orders?.length === 0 ?
+                <>
+                    <IosStatusBar />
+                    <Header />
 
-               
-                          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-                          <Text style={{ fontSize: 22, fontWeight: '300', paddingHorizontal: 10, marginTop: 20, marginBottom: 10 }}>All <Text style={{ fontWeight: "500", color: "#f5220f" }}>Orders</Text></Text>
+                    <View style={{ width: "100%", height: "80%", display: "flex", alignItems: 'center', justifyContent: "center" }}>
+                        <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Image source={require('../assets/images/OrderPage.jpg')} resizeMode='cover' style={{
+                                height: 200,
+                                width: 200
+                            }} />
+                            <Text style={{ fontWeight: "500" }}>Looks No One Ordered</Text>
+                        </View>
+                    </View>
+                    <TabNavigation isHomePage={true} />
+                </>
+                :
 
-                           <View style={{ paddingHorizontal: 20, paddingBottom: 100 }}>
-                                      {
-                                        orders?.map((order, index) => (
-                                            <OrderCart key={index} order={order} />
-                                          ))
-                                          }
-                                </View>
-                               </ScrollView>
+                <>
+                    <IosStatusBar />
+                    <Header />
 
-                            <TabNavigation/>
-                            </>
+
+                    <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+                        <Text style={{ fontSize: 22, fontWeight: '300', paddingHorizontal: 10, marginTop: 20, marginBottom: 10 }}>All <Text style={{ fontWeight: "500", color: "#f5220f" }}>Orders</Text></Text>
+
+                        <View style={{ paddingHorizontal: 20, paddingBottom: 100 }}>
+                            {
+                                orders?.map((order, index) => (
+                                    <OrderCart key={index} order={order} deliveryBoyLat={userCoordinates?.latitude} deliveryBoyLong={userCoordinates?.longitude} deliveryBoyNumber={firebaseApp.auth()?.currentUser?.phoneNumber} />
+                                ))
+                            }
+                        </View>
+                    </ScrollView>
+
+                    <TabNavigation isHomePage={true} />
+                </>
 
 
     );

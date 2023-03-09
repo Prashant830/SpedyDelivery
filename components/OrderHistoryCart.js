@@ -1,43 +1,17 @@
 import { AntDesign, Entypo } from '@expo/vector-icons';
 
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
-import firebaseApp from '../config';
+import React, { useState } from 'react';
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 
-
-const SelectedOrderCard = ({ order }) => {
+const OrderHistoryCart = ({ order }) => {
     const [fullOrder, setFullOrder] = useState(false)
     const [fullOrderStatus, setFullOrderStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const [deliveryOrder, setDeliveryOrder] = useState()
-
-
-    useEffect(() => {
-        firebaseApp.firestore().collection("Delivery")?.doc(firebaseApp.auth()?.currentUser.phoneNumber)?.collection("Orders")?.doc(order?.orderid).onSnapshot((res) => {
-            setDeliveryOrder(res.data())
-        })
-    }, [])
-
-
-    // console.log()
-
     return (
         <View style={{ marginTop: 20, borderRadius: 10, backgroundColor: "#fff", paddingVertical: 5, borderWidth: 1, borderColor: "#f5220f", paddingHorizontal: 10, paddingBottom: 20 }}>
             <Text style={{ paddingHorizontal: 5, fontSize: 10, fontWeight: '300', marginTop: 5, width: "100%", textAlign: 'right' }}>{order?.orderid}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 24, fontWeight: '300', marginTop: 5 }}>{order?.name}</Text>
-            <TouchableOpacity
-                onPress={() => {
-                    if (Platform.OS !== 'android') {
-                        Linking.openURL(`telprompt:${order?.number}`);
-                    }
-                    else {
-                        Linking.openURL(`tel:${order?.number}`);
-                    }
-                }}
-            >
-                <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>+91{order?.number}</Text>
-            </TouchableOpacity>
-
+            <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>+91{order?.number}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', width: "89%", marginTop: 5 }}>{order?.address}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Order Amount: ₹{order?.orderAmount}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Order On: {order?.orderDate}</Text>
@@ -176,86 +150,119 @@ const SelectedOrderCard = ({ order }) => {
             }
             <TouchableOpacity
                 activeOpacity={0.8}
-
                 onPress={() => {
-
-                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
-                        activeOrderDetail: "Out For Delivery",
-                        orderPreparing: true,
-
-
-                    })
-
-
-
-                    firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
-                        activeOrderDetail: "Out For Delivery",
-                        orderPreparing: true,
-
-
-
-                    })
-
-
-                }} style={
-                    order?.orderPreparing !== true ?
-                        { display: 'flex', flexDirection: "row", alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5, marginTop: 20, width: "100%", backgroundColor: "#f5220f", borderRadius: 10 }
+                    if (fullOrderStatus === true) {
+                        setFullOrderStatus(false)
+                    }
+                    else {
+                        setFullOrderStatus(true)
+                    }
+                }} style={{ display: 'flex', flexDirection: "row", alignItems: 'center', paddingHorizontal: 5, marginTop: 5, width: "100%" }}>
+                <Text style={{ fontSize: 12, fontWeight: '300', flex: 1 }}>Order Status: {order?.activeOrderDetail} </Text>
+                {
+                    fullOrderStatus ?
+                        <Entypo name="chevron-small-up" size={24} color="#f5220f" style={{ opacity: 1 }} />
                         :
-                        {
-                            display: 'none'
-                        }
-                }>
-
-
-                <Text style={{ fontSize: 14, color: "#fff", paddingHorizontal: 10, paddingVertical: 10 }}> Order Pickup</Text>
-
+                        <Entypo name="chevron-small-down" size={24} color="#f5220f" style={{ opacity: 1 }} />
+                }
             </TouchableOpacity>
-
-            <TouchableOpacity
-                activeOpacity={0.8}
-
-                onPress={() => {
-
-                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
-                        activeOrderDetail: "Order Delivered",
-                        orderPickup: true,
-                        orderDelivered: true,
-                        orderPreparing: true,
-
-                    })
-
-
-
-                    firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
-                        activeOrderDetail: "Order Delivered",
-                        orderPickup: true,
-                        orderDelivered: true,
-                        orderPreparing: true,
-
-
-                    })
-
-
-                }} style={
-                    order?.orderDelivered !== true ?
-
-                        { display: 'flex', flexDirection: "row", alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5, marginTop: 20, width: "100%", backgroundColor: "#f5220f", borderRadius: 10 }
-                        :
+            {
+                fullOrderStatus &&
+                <View style={{ marginTop: 20 }}>
+                    <Text style={{ fontSize: 22, fontWeight: "300", paddingHorizontal: 10 }}>Order <Text style={{ color: "#f5220f", fontWeight: "500" }}>Details</Text></Text>
+                    <View style={
+                        { display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }
+                    }>
+                        <Text
+                            style={{
+                                color: (order?.orderProcessing === false && order?.activeOrderDetail !== "Processing") ? "lightgray" : "black",
+                                fontSize: 14,
+                                fontWeight: "500",
+                                flex: 1
+                            }}
+                        >Order Processing</Text>
                         {
-                            display: 'none'
+                            (order?.activeOrderDetail === "Processing") &&
+                            <ActivityIndicator size={14} color="#f5220f" />
                         }
-                }>
-                <Text style={{ fontSize: 14, color: "#fff", paddingHorizontal: 10, paddingVertical: 10 }}> Order Delivered</Text>
+                        {
+                            (order?.orderProcessing) &&
+                            <AntDesign name="checkcircle" size={14} color="#f5220f" />
+                        }
 
-            </TouchableOpacity>
+                    </View>
 
+                    <View style={
+                        { display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }
+                    }>
+                        <Text
+                            style={{
+                                color: (order?.orderPreparing === false && order?.activeOrderDetail !== "Preparing") ? "lightgray" : "black",
+                                fontSize: 14,
+                                fontWeight: "500",
+                                flex: 1
+                            }}
+                        >Order Preparing</Text>
+                        {
+                            (order?.activeOrderDetail === "Preparing") &&
+                            <ActivityIndicator size={14} color="#f5220f" />
+                        }
+                        {
+                            (order?.orderPreparing) &&
+                            <AntDesign name="checkcircle" size={14} color="#f5220f" />
+                        }
 
+                    </View>
 
+                    <View style={
+                        { display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }
+                    }>
+                        <Text
+                            style={{
+                                color: (order?.orderPickup === false && order?.activeOrderDetail !== "Out For Delivery") ? "lightgray" : "black",
+                                fontSize: 14,
+                                fontWeight: "500",
+                                flex: 1
+                            }}
+                        >Out For Delivery</Text>
+                        {
+                            (order?.activeOrderDetail === "Out For Delivery") &&
+                            <ActivityIndicator size={14} color="#f5220f" />
+                        }
+                        {
+                            (order?.orderPickup) &&
+                            <AntDesign name="checkcircle" size={14} color="#f5220f" />
+                        }
 
+                    </View>
 
+                    <View style={
+                        { display: 'flex', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginTop: 10 }
+                    }>
+                        <Text
+                            style={{
+                                color: (order?.orderDelivered === false && order?.activeOrderDetail !== "Delivered") ? "lightgray" : "black",
+                                fontSize: 14,
+                                fontWeight: "500",
+                                flex: 1
+                            }}
+                        >Order Delivered</Text>
+                        {
+                            (order?.activeOrderDetail === "Delivered") &&
+                            <ActivityIndicator size={14} color="#f5220f" />
+                        }
+                        {
+                            (order?.orderDelivered) &&
+                            <AntDesign name="checkcircle" size={14} color="#f5220f" />
+                        }
+
+                    </View>
+
+                </View>
+            }
 
         </View>
     )
 }
 
-export default SelectedOrderCard
+export default OrderHistoryCart

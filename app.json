@@ -13,9 +13,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.spedydelivery.store",
       "supportsTablet": true
@@ -35,7 +33,6 @@
       "eas": {
         "projectId": "424b2838-92d5-4da4-80d8-0715e9650a81"
       }
-    },
-    "owner": "prashant830"
+    }
   }
 }

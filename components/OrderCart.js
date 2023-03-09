@@ -1,26 +1,43 @@
 import { AntDesign, Entypo } from '@expo/vector-icons';
 
-import React, { useState } from 'react';
-import { ActivityIndicator, Image, Text, TouchableOpacity, View,TextInput } from 'react-native';
-import firebaseApp from '../config';
 import { useNavigation } from "@react-navigation/native";
+import React, { useState } from 'react';
+import { ActivityIndicator, Image, Linking, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import firebaseApp from '../config';
 import style from './CSS';
 
 
 
-const OrderCart = ({ order }) => {
+const OrderCart = ({ order, deliveryBoyLat, deliveryBoyLong, deliveryBoyNumber }) => {
+
     const [fullOrder, setFullOrder] = useState(false)
     const [isSubmit, setIsSubmit] = useState(true)
     const [fullOrderStatus, setFullOrderStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const navigation = useNavigation()
-        
+
+    // console.log(deliveryBoyLat)
+    // console.log(deliveryBoyLong)
+    // console.log(deliveryBoyNumber)
+
+
 
     return (
         <View style={{ marginTop: 20, borderRadius: 10, backgroundColor: "#fff", paddingVertical: 5, borderWidth: 1, borderColor: "#f5220f", paddingHorizontal: 10, paddingBottom: 20 }}>
             <Text style={{ paddingHorizontal: 5, fontSize: 10, fontWeight: '300', marginTop: 5, width: "100%", textAlign: 'right' }}>{order?.orderid}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 24, fontWeight: '300', marginTop: 5 }}>{order?.name}</Text>
-            <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>+91{order?.number}</Text>
+            <TouchableOpacity
+                onPress={() => {
+                    if (Platform.OS !== 'android') {
+                        Linking.openURL(`telprompt:${order?.number}`);
+                    }
+                    else {
+                        Linking.openURL(`tel:${order?.number}`);
+                    }
+                }}
+            >
+                <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5, color: "#f5220f" }}>+91{order?.number}</Text>
+            </TouchableOpacity>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', width: "89%", marginTop: 5 }}>{order?.address}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Order Amount: ₹{order?.orderAmount}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Order On: {order?.orderDate}</Text>
@@ -160,47 +177,59 @@ const OrderCart = ({ order }) => {
             <TouchableOpacity
                 activeOpacity={0.8}
 
-                onPress={() => {
+                onPress={async () => {
 
-                    firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+
+
+                    await firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
                         OrderAddToDeliveryList: true
                     })
 
+                    await firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                        activeOrderDetail: "Preparing",
+                        orderProcessing: true,
+                    })
 
-                        
-                        firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).set({
-           orderid: order?.orderid,
-           cart: order?.cart,
-           name: order?.name,
-           address: order?.address,
-           number: order?.number,
-           paymentOption: order?.paymentOption,
-           orderAmount: order?.orderAmount,
-           activeOrderDetail: "Processing",
-           currentUserNumber: order?.number,
-           deliveryBoyName: null,
-           deliveryBoyNumber: null,
-           deliveryBoyLat: null,
-           deliveryBoyLong: null,
-           orderProcessing: false,
-           orderPreparing: false,
-           orderPickup: false,
-           orderDelivered: false,
-           orderDate: order?.orderDate,
-           OrderAddToDeliveryList: true,
-           lat : order?.lat,
-           long : order?.long
+                    await firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                        deliveryBoyNumber: String(deliveryBoyNumber),
+                        deliveryBoyLat: Number(deliveryBoyLat),
+                        deliveryBoyLong: Number(deliveryBoyLong),
+                    })
 
-           
-                   })
 
-                   navigation.navigate('OrderSelected')
-                 
-                }} style={{ display: 'flex', flexDirection: "row", alignItems: 'center', paddingHorizontal: 5, marginTop: 5, width: "100%" }}>
-                <Text style={{ fontSize: 12, fontWeight: '300', flex: 1 }}>Order Status: {order?.activeOrderDetail} </Text>
+                    await firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser?.phoneNumber).collection("Orders").doc(order?.orderid).set({
+                        orderid: order?.orderid,
+                        cart: order?.cart,
+                        name: order?.name,
+                        address: order?.address,
+                        number: order?.number,
+                        paymentOption: order?.paymentOption,
+                        orderAmount: order?.orderAmount,
+                        activeOrderDetail: "Preparing",
+                        currentUserNumber: order?.number,
+                        deliveryBoyName: null,
+                        deliveryBoyNumber: String(deliveryBoyNumber),
+                        deliveryBoyLat: Number(deliveryBoyLat),
+                        deliveryBoyLong: Number(deliveryBoyLong),
+                        orderProcessing: true,
+                        orderPreparing: false,
+                        orderPickup: false,
+                        orderDelivered: false,
+                        orderDate: order?.orderDate,
+                        OrderAddToDeliveryList: true,
+                        lat: order?.lat,
+                        long: order?.long
+
+
+                    })
+
+                    navigation.navigate('OrderSelected')
+
+                }} style={{ display: 'flex', backgroundColor: "#f5220f", flexDirection: "row", alignItems: 'center', justifyContent: "center", paddingHorizontal: 5, marginTop: 15, borderRadius: 10 }}>
+
                 {
-                        // <Entypo name="chevron-small-down" size={24} color="#f5220f" style={{ opacity: 1 }} />
-                        <Text style = {{fontSize: 14, fontWeight: '300' , color: "#0000FF"}}> Accept order</Text>
+                    // <Entypo name="chevron-small-down" size={24} color="#f5220f" style={{ opacity: 1 }} />
+                    <Text style={{ fontSize: 14, fontWeight: '300', color: "#fff", paddingHorizontal: 10, paddingVertical: 10 }}> Accept order</Text>
                 }
             </TouchableOpacity>
         </View>

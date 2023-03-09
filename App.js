@@ -1,16 +1,17 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Location from 'expo-location';
+import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { LogBox } from 'react-native';
 import { Provider as ReduxProvider } from 'react-redux';
 import HomePage from './components/HomePage';
-import SplashScreen from './components/SplashScreen';
-import OrderSelected from './components/OrderSelected';
 import LoginPage from './components/LoginPage';
-import configurestore from "./redux/store";
-import { getAuth } from 'firebase/auth';
+import OrderHistory from './components/OrderHistory';
+import OrderSelected from './components/OrderSelected';
+import SplashScreen from './components/SplashScreen';
 import firebaseApp from './config';
+import configurestore from "./redux/store";
 
 
 
@@ -141,7 +142,7 @@ const App = () => {
             backgroundColor: "#fff",
           }
         }}>
-        {showSplashScreen ?
+          {showSplashScreen ?
             <Stack.Screen name='Splash' options={{ headerShown: false, }}  >
               {() => (<SplashScreen getPermission={getPermission === undefined ? fasle : getPermission} />
 
@@ -168,6 +169,7 @@ const App = () => {
             )}
           </Stack.Screen>
           <Stack.Screen name='OrderSelected' component={OrderSelected} options={{ headerShown: false, animation: "fade", animationDuration: 100, contentStyle: { backgroundColor: "#fff" } }} />
+          <Stack.Screen name='OrderHistory' component={OrderHistory} options={{ headerShown: false, animation: "fade", animationDuration: 100, contentStyle: { backgroundColor: "#fff" } }} />
 
         </Stack.Navigator>
 
