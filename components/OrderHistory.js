@@ -22,7 +22,7 @@ const OrderHistory = () => {
                 setFetchorders(
                     res?.docs.map((restaurant) => {
 
-                        if (restaurant?.data()?.currentUserNumber === firebaseApp.auth()?.currentUser?.phoneNumber.replace("+91", "") && restaurant.data()?.orderDelivered == true) {
+                        if (restaurant.data()?.orderDelivered == true) {
 
                             return restaurant.data()
                         }
