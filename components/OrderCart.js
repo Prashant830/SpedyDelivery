@@ -38,7 +38,23 @@ const OrderCart = ({ order, deliveryBoyLat, deliveryBoyLong, deliveryBoyNumber }
             >
                 <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5, color: "#f5220f" }}>+91{order?.number}</Text>
             </TouchableOpacity>
-            <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', width: "89%", marginTop: 5 }}>{order?.address}</Text>
+            <TouchableOpacity
+                onPress={() => {
+                    const scheme = Platform.select({ ios: 'maps:', android: 'geo:0,0?q=' });
+                    const latLng = `${order?.lat},${order?.long}`;
+                    const address = `${order?.address}`
+                    const url = Platform.select({
+                        ios: `https://www.google.com/maps/search/?api=1&query=${order?.lat},${order?.long}`,
+                        android: `https://www.google.com/maps/search/?api=1&query=${order?.lat},${order?.long}`
+                    });
+
+
+                    Linking.openURL(url)
+                }}
+            >
+                <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', width: "89%", marginTop: 5, color: "#f5220f" }}>{order?.address}</Text>
+            </TouchableOpacity>
+
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Order Amount: ₹{order?.orderAmount}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Order On: {order?.orderDate}</Text>
             <Text style={{ paddingHorizontal: 5, fontSize: 12, fontWeight: '300', marginTop: 5 }}>Payment Mode: {order?.paymentOption}</Text>
