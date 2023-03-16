@@ -179,7 +179,33 @@ const OrderCart = ({ order, deliveryBoyLat, deliveryBoyLong, deliveryBoyNumber }
                                         <Text style={{ fontWeight: '300', fontSize: 12, marginTop: 5 }}>({item?.size})</Text>
                                     </View>
                                     <Text style={{ marginTop: 5, fontSize: 10, width: 200, overflow: 'hidden' }}>{item.description}</Text>
-                                    <Text style={{ marginTop: 5, fontSize: 10, width: 200, overflow: 'hidden', fontWeight: "500" }}>{item.ShopName}</Text>
+                                    <Text style={{ marginTop: 5, fontSize: 10, width: 200, overflow: 'hidden', fontWeight: "500" }}>Shop Name: {item.ShopName}</Text>
+                                    <TouchableOpacity
+                                        onPress={() => {
+
+                                            const url = Platform.select({
+                                                ios: `https://www.google.com/maps/search/?api=1&query=${item?.ShopLocation?.Latitude},${item?.ShopLocation?.Longitude}`,
+                                                android: `https://www.google.com/maps/search/?api=1&query=${item?.ShopLocation?.Latitude},${item?.ShopLocation?.Longitude}`
+                                            });
+
+
+                                            Linking.openURL(url)
+                                        }}
+                                    >
+                                        <Text style={{ marginTop: 5, fontSize: 10, width: 200, overflow: 'hidden', fontWeight: "500", color: "#f5220f" }}>Shop Address: {item.ShopAddress}</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity onPress={() => {
+                                        if (Platform.OS !== 'android') {
+                                            Linking.openURL(`telprompt:${item?.ShopNumber}`);
+                                        }
+                                        else {
+                                            Linking.openURL(`tel:${item?.ShopNumber}`);
+                                        }
+                                    }}>
+                                        <Text style={{ marginTop: 5, fontSize: 10, width: 200, overflow: 'hidden', fontWeight: "500", color: "#f5220f" }}>Shop Number: {item?.ShopNumber}</Text>
+
+                                    </TouchableOpacity>
 
                                 </View>
 

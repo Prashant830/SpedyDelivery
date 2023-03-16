@@ -59,11 +59,11 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
     useEffect(() => {
         (async () => {
 
-            db.collection("Orders").orderBy("orderTimestamp", "asc").onSnapshot((res) => {
+            db.collection("Orders").orderBy("orderTimestamp", 'desc').onSnapshot((res) => {
                 setFetchorders(
                     res.docs.map((restaurant) => {
 
-                        if (restaurant.data()?.OrderAddToDeliveryList == false) {
+                        if (restaurant.data()?.OrderAddToDeliveryList === false && restaurant?.data()?.sendDelivery === true) {
                             return restaurant.data()
                         }
 
@@ -97,7 +97,7 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
                 const distance = haversine(startPoint, endPoint, { unit: "meter" })
 
 
-                if (((distance / 1000).toFixed(1)) < 7) {
+                if (((distance / 1000).toFixed(1)) <= 10) {
                     // console.log(distance)
                     // console.log(((distance / 1000).toFixed(1)))
                     orders.push(res)

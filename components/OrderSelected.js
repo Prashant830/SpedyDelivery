@@ -104,6 +104,15 @@ const OrderSelected = () => {
                 </>
                 :
                 <>
+                    <IosStatusBar />
+                    <View style={
+
+                        { width: "100%", backgroundColor: "#f5220f", paddingBottom: 5, paddingLeft: 10 }}>
+                        <TouchableOpacity style={{ width: 25 }} onPress={() => navigation.goBack()}>
+                            <Ionicons name="arrow-back" size={30} color="#fff" />
+                        </TouchableOpacity>
+
+                    </View>
                     <SafeAreaView >
 
                         <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
