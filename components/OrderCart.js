@@ -258,6 +258,7 @@ const OrderCart = ({ order, deliveryBoyLat, deliveryBoyLong, deliveryBoyNumber }
                         orderPickup: false,
                         orderDelivered: false,
                         orderDate: order?.orderDate,
+                        orderCode: order?.orderCode,
                         OrderAddToDeliveryList: true,
                         lat: order?.lat,
                         long: order?.long

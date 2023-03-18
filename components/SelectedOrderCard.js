@@ -1,7 +1,8 @@
 import { AntDesign, Entypo } from '@expo/vector-icons';
+import { width } from 'deprecated-react-native-prop-types/DeprecatedImagePropType';
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import firebaseApp from '../config';
 
 
@@ -10,6 +11,9 @@ const SelectedOrderCard = ({ order }) => {
     const [fullOrderStatus, setFullOrderStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [deliveryOrder, setDeliveryOrder] = useState()
+    const [otpField, setOtpField] = useState()
+    const [err, setErr] = useState("")
+    const [otpEnable, setOtpEnable] = useState(false)
 
 
     useEffect(() => {
@@ -236,6 +240,7 @@ const SelectedOrderCard = ({ order }) => {
 
                     })
 
+                    setOtpEnable(true)
 
                 }} style={
                     order?.orderPreparing !== true ?
@@ -250,34 +255,78 @@ const SelectedOrderCard = ({ order }) => {
                 <Text style={{ fontSize: 14, color: "#fff", paddingHorizontal: 10, paddingVertical: 10 }}> Order Pickup</Text>
 
             </TouchableOpacity>
-
+            <TextInput
+                style={
+                    otpEnable || order?.orderPreparing === true ?
+                        {
+                            display: 'flex',
+                            width: "50%",
+                            borderWidth: 1,
+                            borderColor: "#f5220f",
+                            borderRadius: 10,
+                            height: 40,
+                            paddingHorizontal: 10,
+                            marginTop: 10
+                        }
+                        :
+                        {
+                            display: 'none'
+                        }
+                }
+                placeholder='Enter Order OTP'
+                keyboardType="number-pad"
+                onChangeText={(value) => {
+                    setErr("")
+                    setOtpField(value)
+                }}
+                maxLength={4}
+            />
+            <Text style={
+                err === undefined || err === "" ?
+                    {
+                        display: 'none'
+                    }
+                    :
+                    {
+                        fontSize: 10,
+                        color: "#f5220f",
+                        marginTop: 3
+                    }
+            }>{err}</Text>
             <TouchableOpacity
                 activeOpacity={0.8}
 
                 onPress={async () => {
+                    // console.log(order)
+                    if (Number(otpField) === order?.orderCode) {
+                        await firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
+                            activeOrderDetail: "Order Delivered",
+                            orderPickup: true,
+                            orderDelivered: true,
+                            orderPreparing: true,
 
-                    await firebaseApp.firestore().collection("Orders").doc(order?.orderid).update({
-                        activeOrderDetail: "Order Delivered",
-                        orderPickup: true,
-                        orderDelivered: true,
-                        orderPreparing: true,
+                        })
 
-                    })
-
-                    await firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
-                        activeOrderDetail: "Order Delivered",
-                        orderPickup: true,
-                        orderDelivered: true,
-                        orderPreparing: true,
-
-
-                    })
-
-                    const fetchorder = await firebaseApp?.firestore()?.collection("Orders")?.doc(order?.orderid)?.get()
+                        await firebaseApp.firestore().collection("Delivery").doc(firebaseApp.auth()?.currentUser.phoneNumber).collection("Orders").doc(order?.orderid).update({
+                            activeOrderDetail: "Order Delivered",
+                            orderPickup: true,
+                            orderDelivered: true,
+                            orderPreparing: true,
 
 
-                    await firebaseApp.firestore().collection("Orders Delivered").doc(order?.orderid).set(fetchorder?.data())
-                    await firebaseApp.firestore().collection("Orders").doc(order?.orderid).delete()
+                        })
+
+                        const fetchorder = await firebaseApp?.firestore()?.collection("Orders")?.doc(order?.orderid)?.get()
+
+
+                        await firebaseApp.firestore().collection("Orders Delivered").doc(order?.orderid).set(fetchorder?.data())
+                        await firebaseApp.firestore().collection("Orders").doc(order?.orderid).delete()
+
+                    }
+                    else {
+                        setErr("OTP is invalid.")
+                    }
+
 
 
 

@@ -11,7 +11,7 @@ import TabNavigation from './TabNavigation';
 
 const OrderHistory = () => {
     const db = firebaseApp.firestore()
-    const [fetchorders, setFetchorders] = useState([])
+    const [fetchorders, setFetchorders] = useState()
     const orders = []
     const navigation = useNavigation()
 

@@ -53,7 +53,7 @@ const HomePage = ({ getPermission, userLocation, userAdd }) => {
 
 
     const db = firebaseApp.firestore()
-    const [fetchorders, setFetchorders] = useState([])
+    const [fetchorders, setFetchorders] = useState()
     const orders = []
 
     useEffect(() => {
